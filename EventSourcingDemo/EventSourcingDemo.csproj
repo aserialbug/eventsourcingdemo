@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\EventSourcingDemo.Application\EventSourcingDemo.Application.csproj" />
+      <ProjectReference Include="..\EventSourcingDemo.Domain\EventSourcingDemo.Domain.csproj" />
+      <ProjectReference Include="..\EventSourcingDemo.Infrastructure\EventSourcingDemo.Infrastructure.csproj" />
+    </ItemGroup>
+
+</Project>
