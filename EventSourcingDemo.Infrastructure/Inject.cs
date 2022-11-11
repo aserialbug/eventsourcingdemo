@@ -8,7 +8,7 @@ public static class Inject
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection serviceCollection)
     {
-        serviceCollection.AddScoped<IPersonRepository, PersonRepository>();
+        serviceCollection.AddSingleton<IPersonRepository, PersonRepository>();
         return serviceCollection;
     }
 }

@@ -2,4 +2,7 @@
 
 public record AddPersonParameters(
     string FirstName,
-    string LastName);
+    string LastName,
+    DateTime BirthDay,
+    AddressParameters? Address,
+    PhoneParameters[]? Phones);

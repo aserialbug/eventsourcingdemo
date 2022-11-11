@@ -1,3 +1,7 @@
-﻿namespace EventSourcingDemo.Application.UseCases.GetPerson;
+﻿using EventSourcingDemo.Domain.Entities;
+using EventSourcingDemo.Domain.ValueObjects;
+using MediatR;
 
-public record GetPersonQuery();
+namespace EventSourcingDemo.Application.UseCases.GetPerson;
+
+public record GetPersonQuery(PersonId PersonId) : IRequest<Person>;

@@ -1,3 +1,8 @@
-﻿namespace EventSourcingDemo.Application.UseCases.UpdatePerson;
+﻿using EventSourcingDemo.Domain.ValueObjects;
+using MediatR;
 
-public record UpdatePersonCommand();
+namespace EventSourcingDemo.Application.UseCases.UpdatePerson;
+
+public record UpdatePersonCommand(
+    PersonId PersonId,
+    UpdatePersonParameters Parameters) : IRequest;

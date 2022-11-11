@@ -5,4 +5,5 @@ namespace EventSourcingDemo.Application.Interfaces;
 
 public interface IPersonRepository : IRepository<Person, PersonId>
 {
+    Task<Person[]> GetAll();
 }

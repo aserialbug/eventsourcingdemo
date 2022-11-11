@@ -1,3 +1,6 @@
-﻿namespace EventSourcingDemo.Application.UseCases.GetAll;
+﻿using EventSourcingDemo.Domain.Entities;
+using MediatR;
 
-public record GetAllQuery();
+namespace EventSourcingDemo.Application.UseCases.GetAll;
+
+public record GetAllQuery() : IRequest<Person[]>;

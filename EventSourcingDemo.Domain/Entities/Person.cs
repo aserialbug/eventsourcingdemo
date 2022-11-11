@@ -34,8 +34,8 @@ public class Person : Entity<PersonId>
         }
     }
 
-    private DateOnly? _birthDay;
-    public DateOnly? BirthDay
+    private DateTime? _birthDay;
+    public DateTime? BirthDay
     {
         get => _birthDay;
         set => _birthDay = value ?? throw new InvalidOperationException("Cannot assign null to BirthDay");
@@ -53,7 +53,7 @@ public class Person : Entity<PersonId>
     public Person(PersonId id,
         string firstName,
         string lastName,
-        DateOnly? birthDay = null,
+        DateTime? birthDay = null,
         Address? address = null) : base(id)
     {
         if (string.IsNullOrWhiteSpace(firstName))
@@ -71,11 +71,13 @@ public class Person : Entity<PersonId>
 
     public void AddPhone(Phone phone)
     {
-        _phones.Add(phone);
+        if (!_phones.Add(phone))
+            throw new InvalidOperationException($"Person with id {Id} already has the phone {phone}");
     }
 
     public void RemovePhone(Phone phone)
     {
-        _phones.Remove(phone);
+        if(!_phones.Remove(phone))
+            throw new InvalidOperationException($"Person with id {Id} does not have the phone {phone}");
     }
 }

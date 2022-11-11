@@ -6,15 +6,32 @@ namespace EventSourcingDemo.Infrastructure.Repositories;
 
 public class PersonRepository : IPersonRepository
 {
-    public Task<Person> this[PersonId id] => throw new NotImplementedException();
+    private readonly Dictionary<PersonId, Person> _persons = new Dictionary<PersonId, Person>();
+
+    public Task<Person> this[PersonId id] => GetById(id);
+
+    private Task<Person> GetById(PersonId id)
+    {
+        if (!_persons.TryGetValue(id, out var person))
+            throw new Exception($"Person with {id} was not found");
+
+        return Task.FromResult(person);
+    }
 
     public Task Add(Person entity)
     {
-        throw new NotImplementedException();
+        _persons.Add(entity.Id, entity);
+        return Task.CompletedTask;
     }
 
     public Task Remove(Person entity)
     {
-        throw new NotImplementedException();
+        _persons.Remove(entity.Id);
+        return Task.CompletedTask;
+    }
+
+    public Task<Person[]> GetAll()
+    {
+        return Task.FromResult(_persons.Values.ToArray());
     }
 }

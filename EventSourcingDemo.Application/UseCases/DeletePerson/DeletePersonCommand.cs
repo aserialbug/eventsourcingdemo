@@ -1,3 +1,6 @@
-﻿namespace EventSourcingDemo.Application.UseCases.DeletePerson;
+﻿using EventSourcingDemo.Domain.ValueObjects;
+using MediatR;
 
-public record DeletePersonCommand();
+namespace EventSourcingDemo.Application.UseCases.DeletePerson;
+
+public record DeletePersonCommand(PersonId PersonId) : IRequest;
