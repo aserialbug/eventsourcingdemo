@@ -27,11 +27,11 @@ public class PersonController : ControllerBase
     /// </summary>
     /// <returns></returns>
     [HttpGet]
-    public async Task<PersonViewModel[]> GetAll()
+    [ProducesResponseType(typeof(PersonViewModel[]),StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetAll()
     {
         var people = await Mediator.Send(new GetAllQuery());
-        return people.ToViewModels().ToArray();
-        
+        return Ok(people.ToViewModels().ToArray());
     }
 
     /// <summary>
@@ -40,11 +40,14 @@ public class PersonController : ControllerBase
     /// <param name="id"></param>
     /// <returns></returns>
     [HttpGet("{id}")]
-    public async Task<PersonViewModel> GetPerson([FromRoute]string id)
+    [ProducesResponseType(typeof(PersonViewModel),StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetPerson([FromRoute]string id)
     {
         var personId = PersonId.FromString(id);
         var person = await Mediator.Send(new GetPersonQuery(personId));
-        return person.ToViewModel();
+        return Ok(person.ToViewModel());
     }
 
     /// <summary>
@@ -53,10 +56,12 @@ public class PersonController : ControllerBase
     /// <param name="parameters"></param>
     /// <returns></returns>
     [HttpPost]
-    public async Task<string> AddPerson(AddPersonParameters parameters)
+    [ProducesResponseType(typeof(string),StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> AddPerson(AddPersonParameters parameters)
     {
         var personId = await Mediator.Send(new AddPersonCommand(parameters));
-        return personId.ToString();
+        return Ok(personId.ToString());
     }
 
     /// <summary>
@@ -64,7 +69,11 @@ public class PersonController : ControllerBase
     /// </summary>
     /// <param name="id"></param>
     /// <param name="parameters"></param>
-    [HttpPost("{id}")]
+    [HttpPut("{id}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task UpdatePerson([FromRoute]string id, [FromBody] UpdatePersonParameters parameters)
     {
         var personId = PersonId.FromString(id);
@@ -77,10 +86,15 @@ public class PersonController : ControllerBase
     /// <param name="id"></param>
     /// <param name="parameters"></param>
     [HttpPost("{id}/AddPhone")]
-    public async Task AddPhone([FromRoute]string id, [FromBody] AddPhoneParameters parameters)
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    public async Task<IActionResult> AddPhone([FromRoute]string id, [FromBody] AddPhoneParameters parameters)
     {
         var personId = PersonId.FromString(id);
         _ = await Mediator.Send(new AddPhoneCommand(personId, parameters));
+        return NoContent();
     }
     
     /// <summary>
@@ -89,10 +103,15 @@ public class PersonController : ControllerBase
     /// <param name="id"></param>
     /// <param name="parameters"></param>
     [HttpPost("{id}/RemovePhone")]
-    public async Task RemovePhone([FromRoute]string id, [FromBody] RemovePhoneParameters parameters)
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    public async Task<IActionResult> RemovePhone([FromRoute]string id, [FromBody] RemovePhoneParameters parameters)
     {
         var personId = PersonId.FromString(id);
         _ = await Mediator.Send(new RemovePhoneCommand(personId, parameters));
+        return NoContent();
     }
 
     /// <summary>
@@ -100,6 +119,9 @@ public class PersonController : ControllerBase
     /// </summary>
     /// <param name="id"></param>
     [HttpDelete("{id}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task DeletePerson([FromRoute]string id)
     {
         var personId = PersonId.FromString(id);
