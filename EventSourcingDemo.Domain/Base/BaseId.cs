@@ -1,11 +1,16 @@
-﻿namespace EventSourcingDemo.Domain.Base;
+﻿using EventSourcingDemo.Domain.Exceptions;
+
+namespace EventSourcingDemo.Domain.Base;
 
 public abstract class BaseId : ValueObject
 {
-    private string _id;
+    private readonly string _id;
 
     protected BaseId(string id)
     {
+        if (string.IsNullOrWhiteSpace(id))
+            ValidationException.ThrowArgumentNullException(nameof(id));
+        
         _id = id;
     }
     

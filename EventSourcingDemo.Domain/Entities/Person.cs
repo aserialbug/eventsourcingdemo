@@ -1,5 +1,6 @@
 ﻿using System.Reflection.Metadata.Ecma335;
 using EventSourcingDemo.Domain.Base;
+using EventSourcingDemo.Domain.Exceptions;
 using EventSourcingDemo.Domain.ValueObjects;
 
 namespace EventSourcingDemo.Domain.Entities;
@@ -57,11 +58,11 @@ public class Person : Entity<PersonId>
         Address? address = null) : base(id)
     {
         if (string.IsNullOrWhiteSpace(firstName))
-            throw new ArgumentNullException(nameof(firstName));
+            ValidationException.ThrowArgumentNullException(nameof(firstName));
         _firstName = firstName;
         
         if (string.IsNullOrWhiteSpace(lastName))
-            throw new ArgumentNullException(nameof(lastName));
+            ValidationException.ThrowArgumentNullException(nameof(lastName));
         _lastName = lastName;
         
         BirthDay = birthDay;

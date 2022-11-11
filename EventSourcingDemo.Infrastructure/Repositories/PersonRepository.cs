@@ -1,5 +1,6 @@
 ﻿using EventSourcingDemo.Application.Interfaces;
 using EventSourcingDemo.Domain.Entities;
+using EventSourcingDemo.Domain.Exceptions;
 using EventSourcingDemo.Domain.ValueObjects;
 
 namespace EventSourcingDemo.Infrastructure.Repositories;
@@ -13,7 +14,7 @@ public class PersonRepository : IPersonRepository
     private Task<Person> GetById(PersonId id)
     {
         if (!_persons.TryGetValue(id, out var person))
-            throw new Exception($"Person with {id} was not found");
+            NotFoundException.ThrowEntityNotFound<Person,PersonId>(id);
 
         return Task.FromResult(person);
     }

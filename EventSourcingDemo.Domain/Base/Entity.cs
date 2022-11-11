@@ -1,4 +1,6 @@
-﻿namespace EventSourcingDemo.Domain.Base;
+﻿using EventSourcingDemo.Domain.Exceptions;
+
+namespace EventSourcingDemo.Domain.Base;
 
 public abstract class Entity<TId> : IEquatable<Entity<TId>> where TId : BaseId
 {
@@ -6,7 +8,10 @@ public abstract class Entity<TId> : IEquatable<Entity<TId>> where TId : BaseId
     
     protected Entity(TId id)
     {
-        Id = id ?? throw new ArgumentNullException(nameof(id));
+        if (id == null)
+            ValidationException.ThrowArgumentNullException(nameof(id));
+            
+        Id = id;
     }
 
     public bool Equals(Entity<TId>? other)
