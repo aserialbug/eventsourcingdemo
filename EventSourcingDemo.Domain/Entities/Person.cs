@@ -1,5 +1,4 @@
-﻿using System.Reflection.Metadata.Ecma335;
-using EventSourcingDemo.Domain.Base;
+﻿using EventSourcingDemo.Domain.Base;
 using EventSourcingDemo.Domain.Exceptions;
 using EventSourcingDemo.Domain.ValueObjects;
 
@@ -18,7 +17,11 @@ public class Person : Entity<PersonId>
             if (string.IsNullOrWhiteSpace(value))
                 throw new InvalidOperationException("Cannot assign null to FirstName");
 
+            if(_firstName == value)
+                return;
+            
             _firstName = value;
+            RegisterSetAttributeEvent<Person, string>(e => e.FirstName, _firstName);
         }
     }
 
@@ -31,7 +34,11 @@ public class Person : Entity<PersonId>
             if (string.IsNullOrWhiteSpace(value))
                 throw new InvalidOperationException("Cannot assign null to LastName");
 
+            if(_lastName == value)
+                return;
+            
             _lastName = value;
+            RegisterSetAttributeEvent<Person, string>(e => e.LastName, _lastName);
         }
     }
 
@@ -39,14 +46,34 @@ public class Person : Entity<PersonId>
     public DateTime? BirthDay
     {
         get => _birthDay;
-        set => _birthDay = value ?? throw new InvalidOperationException("Cannot assign null to BirthDay");
+        set
+        {
+            if(!value.HasValue)
+                throw new InvalidOperationException("Cannot assign null to BirthDay");
+            
+            if(_birthDay == value)
+                return;
+
+            _birthDay = value;
+            RegisterSetAttributeEvent<Person, DateTime?>(e => e.BirthDay, _birthDay);
+        }
     }
 
     private Address? _address;
     public Address? Address
     {
         get => _address;
-        set => _address = value ?? throw new InvalidOperationException("Cannot assign null to BirthDay");
+        set
+        {
+            if(value == null)
+                throw new InvalidOperationException("Cannot assign null to Address");
+            
+            if(_address == value)
+                return;
+
+            _address = value;
+            RegisterSetAttributeEvent<Person, Address?>(e => e.Address, _address);
+        }
     }
     
     public Phone[] Phones => _phones.ToArray();
@@ -57,16 +84,15 @@ public class Person : Entity<PersonId>
         DateTime? birthDay = null,
         Address? address = null) : base(id)
     {
-        if (string.IsNullOrWhiteSpace(firstName))
-            ValidationException.ThrowArgumentNullException(nameof(firstName));
-        _firstName = firstName;
+        FirstName = firstName;
+        LastName = lastName;
         
-        if (string.IsNullOrWhiteSpace(lastName))
-            ValidationException.ThrowArgumentNullException(nameof(lastName));
-        _lastName = lastName;
+        if(birthDay.HasValue)
+            BirthDay = birthDay;
         
-        BirthDay = birthDay;
-        _address = address;
+        if(address != null)
+            Address = address;
+        
         _phones = new HashSet<Phone>();
     }
 
@@ -74,11 +100,15 @@ public class Person : Entity<PersonId>
     {
         if (!_phones.Add(phone))
             throw new InvalidOperationException($"Person with id {Id} already has the phone {phone}");
+
+        RegisterChangeCollectionEvent<Person, Phone>(p => p._phones, phone, ChangeType.Add);
     }
 
     public void RemovePhone(Phone phone)
     {
         if(!_phones.Remove(phone))
             throw new InvalidOperationException($"Person with id {Id} does not have the phone {phone}");
+        
+        RegisterChangeCollectionEvent<Person, Phone>(p => p._phones, phone, ChangeType.Remove);
     }
 }

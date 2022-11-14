@@ -5,9 +5,9 @@ using EventSourcingDemo.Domain.ValueObjects;
 
 namespace EventSourcingDemo.Infrastructure.Repositories;
 
-public class PersonRepository : IPersonRepository
+public class PersonInMemoryRepository : IPersonRepository
 {
-    private readonly Dictionary<PersonId, Person> _persons = new Dictionary<PersonId, Person>();
+    private readonly Dictionary<PersonId, Person> _persons = new ();
 
     public Task<Person> this[PersonId id] => GetById(id);
 

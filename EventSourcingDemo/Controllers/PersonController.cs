@@ -18,7 +18,7 @@ namespace EventSourcingDemo.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/[controller]")]
-public class PersonController : ControllerBase
+public class PersonsController : ControllerBase
 {
     private IMediator Mediator => HttpContext.RequestServices.GetRequiredService<IMediator>();
     
@@ -61,7 +61,7 @@ public class PersonController : ControllerBase
     public async Task<IActionResult> AddPerson(AddPersonParameters parameters)
     {
         var personId = await Mediator.Send(new AddPersonCommand(parameters));
-        return Ok(personId.ToString());
+        return Created(string.Empty, personId.ToString());
     }
 
     /// <summary>
@@ -74,10 +74,11 @@ public class PersonController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
-    public async Task UpdatePerson([FromRoute]string id, [FromBody] UpdatePersonParameters parameters)
+    public async Task<IActionResult> UpdatePerson([FromRoute]string id, [FromBody] UpdatePersonParameters parameters)
     {
         var personId = PersonId.FromString(id);
         _ = await Mediator.Send(new UpdatePersonCommand(personId, parameters));
+        return NoContent();
     }
 
     /// <summary>
@@ -122,9 +123,10 @@ public class PersonController : ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task DeletePerson([FromRoute]string id)
+    public async Task<IActionResult> DeletePerson([FromRoute]string id)
     {
         var personId = PersonId.FromString(id);
         _ = await Mediator.Send(new DeletePersonCommand(personId));
+        return NoContent();
     }
 }
