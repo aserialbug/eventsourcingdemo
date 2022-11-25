@@ -1,5 +1,4 @@
 ﻿using EventSourcingDemo.Application.Interfaces;
-using EventSourcingDemo.Domain.Base;
 using EventSourcingDemo.Domain.Entities;
 using EventSourcingDemo.Domain.Exceptions;
 using EventSourcingDemo.Domain.ValueObjects;
@@ -9,7 +8,6 @@ namespace EventSourcingDemo.Infrastructure.Repositories;
 
 public class PersonInMemoryRepository : IPersonRepository
 {
-    private readonly Dictionary<PersonId, SortedList<ulong, BaseDomainEvent<Person>>> _sequences = new ();
     private readonly Dictionary<PersonId, PersonTracker> _personTrackers = new ();
 
     public Task<Person> this[PersonId id] => Task.FromResult(GetById(id));
