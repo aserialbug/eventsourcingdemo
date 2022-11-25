@@ -1,13 +1,10 @@
 ﻿using System.Collections.Concurrent;
-using System.Linq.Expressions;
 using EventSourcingDemo.Domain.Exceptions;
 
 namespace EventSourcingDemo.Domain.Base;
 
 public abstract class Entity<TId> : IEquatable<Entity<TId>> where TId : BaseId
 {
-    private readonly ConcurrentQueue<StoredEvent> _events;
-    private long _version;
 
     public TId Id { get; }
     
@@ -17,42 +14,8 @@ public abstract class Entity<TId> : IEquatable<Entity<TId>> where TId : BaseId
             ValidationException.ThrowArgumentNullException(nameof(id));
             
         Id = id;
-        _events = new ConcurrentQueue<StoredEvent>();
-        _version = 0;
     }
 
-    protected void RegisterSetAttributeEvent<TEntity, TValue>(Expression<Func<TEntity, TValue>> propertySelector, TValue value)
-        where TEntity : Entity<TId>
-    {
-        if(propertySelector.Body is not MemberExpression)
-            OperationException.ThrowCannotPerformAction();
-
-        _version++;
-        var memberExpression = propertySelector.Body as MemberExpression;
-        _events.Enqueue(new AttributeEvent<TValue>(
-            _version,
-            memberExpression.Member.Name,
-            DateTime.Now,
-            value));
-    }
-
-    protected void RegisterChangeCollectionEvent<TEntity, TValue>(
-        Expression<Func<TEntity, ICollection<TValue>>> collectionSelector,
-        TValue value, ChangeType changeType)
-        where TEntity : Entity<TId>
-    {
-        if(collectionSelector.Body is not MemberExpression)
-            OperationException.ThrowCannotPerformAction();
-
-        var memberExpression = collectionSelector.Body as MemberExpression;
-        _version++;
-        _events.Enqueue(new CollectionEvent<TValue>(
-            _version,
-            memberExpression.Member.Name,
-            value,
-            DateTime.Now,
-            changeType));
-    }
 
     public bool Equals(Entity<TId>? other)
     {

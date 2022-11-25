@@ -1,4 +1,5 @@
 ﻿using EventSourcingDemo.Application.Behaviours;
+using EventSourcingDemo.Application.Common;
 using EventSourcingDemo.Application.Pipeline;
 using EventSourcingDemo.Application.UseCases.AddPerson;
 using EventSourcingDemo.Application.UseCases.AddPhone;
@@ -43,6 +44,8 @@ public static class Inject
         serviceCollection.AddMediatorPipeline<UpdatePersonCommand, Unit>()
             .AddStep<TransactionBehaviour<UpdatePersonCommand, Unit>>()
             .AddRequestHandler<UpdatePersonCommandHandler>();
+
+        serviceCollection.AddScoped<RequestContext>();
         
         return serviceCollection;
     }

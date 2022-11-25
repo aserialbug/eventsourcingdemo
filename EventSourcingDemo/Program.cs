@@ -2,6 +2,7 @@ using System.Reflection;
 using System.Text.Json.Serialization;
 using EventSourcingDemo.Application;
 using EventSourcingDemo.Infrastructure;
+using EventSourcingDemo.Middleware;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,6 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure();
+builder.Services.FillRequestContext();
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {

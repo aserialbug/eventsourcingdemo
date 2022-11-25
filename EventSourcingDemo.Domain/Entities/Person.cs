@@ -1,10 +1,9 @@
 ﻿using EventSourcingDemo.Domain.Base;
-using EventSourcingDemo.Domain.Exceptions;
 using EventSourcingDemo.Domain.ValueObjects;
 
 namespace EventSourcingDemo.Domain.Entities;
 
-public class Person : Entity<PersonId>
+public partial class Person : EventEntity<Person, PersonId>
 {
     private readonly HashSet<Phone> _phones;
 
@@ -21,7 +20,8 @@ public class Person : Entity<PersonId>
                 return;
             
             _firstName = value;
-            RegisterSetAttributeEvent<Person, string>(e => e.FirstName, _firstName);
+            RegisterDomainEvent(new FirstNameModifiedEvent(_firstName));
+            
         }
     }
 
@@ -38,7 +38,7 @@ public class Person : Entity<PersonId>
                 return;
             
             _lastName = value;
-            RegisterSetAttributeEvent<Person, string>(e => e.LastName, _lastName);
+            RegisterDomainEvent(new LastNameModifiedEvent(_lastName));
         }
     }
 
@@ -55,7 +55,7 @@ public class Person : Entity<PersonId>
                 return;
 
             _birthDay = value;
-            RegisterSetAttributeEvent<Person, DateTime?>(e => e.BirthDay, _birthDay);
+            RegisterDomainEvent(new BirthDayModifiedEvent(_birthDay.Value));
         }
     }
 
@@ -72,11 +72,16 @@ public class Person : Entity<PersonId>
                 return;
 
             _address = value;
-            RegisterSetAttributeEvent<Person, Address?>(e => e.Address, _address);
+            RegisterDomainEvent(new AddressModifiedEvent(_address));
         }
     }
     
     public Phone[] Phones => _phones.ToArray();
+
+    public Person(PersonId id) : base(id)
+    {
+        _phones = new HashSet<Phone>();
+    }
     
     public Person(PersonId id,
         string firstName,
@@ -100,15 +105,15 @@ public class Person : Entity<PersonId>
     {
         if (!_phones.Add(phone))
             throw new InvalidOperationException($"Person with id {Id} already has the phone {phone}");
-
-        RegisterChangeCollectionEvent<Person, Phone>(p => p._phones, phone, ChangeType.Add);
+        
+        RegisterDomainEvent(new PhoneAddedModifiedEvent(phone));
     }
 
     public void RemovePhone(Phone phone)
     {
-        if(!_phones.Remove(phone))
+        if (!_phones.Remove(phone))
             throw new InvalidOperationException($"Person with id {Id} does not have the phone {phone}");
-        
-        RegisterChangeCollectionEvent<Person, Phone>(p => p._phones, phone, ChangeType.Remove);
+
+        RegisterDomainEvent(new PhoneRemovedModifiedEvent(phone));
     }
 }
