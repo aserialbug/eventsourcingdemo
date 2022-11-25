@@ -1,14 +1,19 @@
 ﻿using EventSourcingDemo.Domain.Entities;
+using EventSourcingDemo.Domain.ValueObjects;
 
 namespace EventSourcingDemo.Infrastructure.ChangeTracker;
 
 public class PersonTracker
 {
-    private readonly Person _person;
-    public Person Person => _person;
+    public PersonId PersonId { get; }
 
     public PersonTracker(Person person)
     {
-        _person = person;
+        PersonId = person.Id;
+    }
+
+    public Person Materialize()
+    {
+        return null;
     }
 }
